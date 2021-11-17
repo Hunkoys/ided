@@ -7,7 +7,7 @@ Assign unique ids to your array elements.
 ## Terms
 
 * `element: {}` - A single item in an ided list. It has an `id` and `value` property.
-  * `id: number`
+  * `id: string`
   * `value: any` 
 * `index: number` - The position of an element in the list. Like an array's index.
 * `list: {}` - Instance of `Ided` class.
@@ -33,6 +33,6 @@ Assign unique ids to your array elements.
 
 
 <ol>
-<li>This <code>element</code> argument can be just an object with an id (<code>{id: 123}</code>) or with a value (<code>{value: 'hi'}</code>). If element has both properties, the method will only use the <code>id</code>.
+<li>This <code>element</code> argument can be just an object with an id (<code>{id: 'a12'}</code>) or with a value (<code>{value: 'hi'}</code>). If element has both properties, the method will only use the <code>id</code>.
 </li>
 </ol>
