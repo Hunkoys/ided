@@ -59,5 +59,9 @@
     "tsdx": "^0.14.1",
     "tslib": "^2.3.1",
     "typescript": "^3.9.10"
+  },
+  "dependencies": {
+    "@types/uuid": "^8.3.3",
+    "uuid": "^3.4.0"
   }
 }
