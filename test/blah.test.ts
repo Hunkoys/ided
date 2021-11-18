@@ -1,4 +1,5 @@
-import { Element, Ided } from '../src';
+import { Ided } from '../src';
+import { Element } from '../src/Element';
 
 // ['Beni', 'Clara', 'Valentino']
 
