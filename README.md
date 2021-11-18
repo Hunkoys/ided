@@ -18,7 +18,7 @@ Assign unique ids to your array elements.
 
 * `new Ided(*any[]) => list` - Creates a new ided list. Optional array argument to fill the initial list.
 * `Ided.parse(element[]) => list` - Converts an element array into an ided list. You can turn it back into an element array with `list.toArray()`.
-* `list.insert(value, *index|element) => element` - Insert the `value` at position `index` or before the `element` or at the end if the second argument is omitted. Returns the inserted element. [<sup>1</sup>](#ref1)
+* `list.insert(value, *index|element) => element` - Insert the `value` at position `index` or before the `element` or at the end if the second argument is omitted. Negative values defines the position from the end of the list. Returns the inserted element. [<sup>1</sup>](#ref1)
 * `list.length` - A property (`number`) representing the number of elements in the list.
 * `list.indexOf(element) => index` - Gets the `index` of an element by its `id` or `value`. Returns `-1` otherwise. [<sup>1</sup>](#ref1)
 * `list.at(index) => element|null` - Gets the `element` by its `index` or position in the list. [<sup>1</sup>](#ref1)
