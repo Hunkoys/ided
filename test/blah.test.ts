@@ -231,3 +231,22 @@ describe('indexOf', () => {
     expect(ided.indexOf({ value: 'Clarita' })).toBe(-1);
   });
 });
+
+describe('at', () => {
+  test('in bounds', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
+
+    expect(ided.at(1)?.value).toBe('Clara');
+  });
+
+  test('out of bounds', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
+
+    expect(ided.at(-1)).toBe(null);
+    expect(ided.at(20)).toBe(null);
+  });
+});

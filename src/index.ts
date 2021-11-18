@@ -24,6 +24,10 @@ export class Ided {
     return -1;
   }
 
+  at(index: Index): Element | null {
+    return this.__array__[index] || null;
+  }
+
   insert(value: Value, position?: Index | Key): Element {
     const element = new Element(value);
 
