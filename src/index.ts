@@ -1,15 +1,19 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export type Index = number;
+export const Index: Index = 0;
 
 export type Id = string;
+export const Id: Id = '';
 
 export type Value = any;
+export const Value: Value = undefined;
 
 export interface Element {
   id: Id;
   value: Value;
 }
+export const Element: Element = { id: Id, value: Value };
 
 export class Ided {
   private __array__: Element[] = [];
