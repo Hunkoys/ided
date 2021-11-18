@@ -1,10 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 
-type Index = number;
+export type Index = number;
 
-interface Element {
-  id: string;
-  value: any;
+export type Id = string;
+
+export type Value = any;
+
+export interface Element {
+  id: Id;
+  value: Value;
 }
 
 export class Ided {
