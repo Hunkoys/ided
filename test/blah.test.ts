@@ -1,9 +1,19 @@
 import { Ided } from '../src';
+import { Id } from '../src/types';
 import { Element } from '../src/Element';
 
 // ['Beni', 'Clara', 'Valentino']
 
-const IdType = String;
+const constructors = {
+  string: String,
+  number: Number,
+  boolean: Boolean,
+  object: Object,
+};
+
+function any(type: string) {
+  return expect.any(constructors[type as keyof object]);
+}
 
 function values(element: Element) {
   return element.value;
@@ -19,7 +29,7 @@ describe('constructor', () => {
 
     const ided = new Ided(input);
 
-    expect(ided.toArray(({ value }) => value)).toEqual(input);
+    expect(ided.toArray(values)).toEqual(input);
   });
 });
 
@@ -35,15 +45,15 @@ describe('toArray', () => {
 
     const expectation = [
       {
-        id: expect.any(IdType),
+        id: any(Id),
         value: 'Beni',
       },
       {
-        id: expect.any(IdType),
+        id: any(Id),
         value: 'Clara',
       },
       {
-        id: expect.any(IdType),
+        id: any(Id),
         value: 'Valentino',
       },
     ];
@@ -58,11 +68,24 @@ describe('toArray', () => {
 
     const ided = new Ided(input);
 
-    expect(ided.toArray(({ value }) => value)).toEqual(input);
+    expect(ided.toArray(values)).toEqual(input);
   });
 });
 
 describe('insert', () => {
+  function testReturnWith(index?: number) {
+    const ided = new Ided();
+
+    const input = 'Valentino';
+
+    const expectation = {
+      id: any(Id),
+      value: input,
+    };
+
+    expect(ided.insert(input, index)).toEqual(expectation);
+  }
+
   test('no position argument', () => {
     const ided = new Ided();
 
@@ -71,7 +94,7 @@ describe('insert', () => {
     ided.insert('Valentino');
 
     expect(ided.toArray(values)).toEqual(['Beni', 'Clara', 'Valentino']);
-    expect(typeof ided.insert('Valentino')).not.toBe(undefined);
+    testReturnWith();
   });
 
   test('position 0', () => {
@@ -82,18 +105,18 @@ describe('insert', () => {
     ided.insert('Valentino', 0);
 
     expect(ided.toArray(values)).toEqual(['Valentino', 'Clara', 'Beni']);
-    expect(ided.insert('Valentino', 0)).not.toBeUndefined();
+    testReturnWith(0);
   });
 
   test('negative positions', () => {
     const ided = new Ided();
 
-    ided.insert('Beni', -10);
-    ided.insert('Clara', -10);
-    ided.insert('Valentino', -10);
+    ided.insert('Beni'); // push
+    ided.insert('Clara', -1);
+    ided.insert('Valentino', -1);
 
-    expect(ided.toArray(values)).toEqual(['Valentino', 'Clara', 'Beni']);
-    expect(ided.insert('Valentino', -10)).not.toBeUndefined();
+    expect(ided.toArray(values)).toEqual(['Clara', 'Valentino', 'Beni']);
+    testReturnWith(-1);
   });
 
   test('position > length', () => {
@@ -103,7 +126,7 @@ describe('insert', () => {
     ided.insert('Clara', 10);
 
     expect(ided.toArray(values)).toEqual(['Beni', 'Clara']);
-    expect(ided.insert('Valentino', 10)).not.toBeUndefined();
+    testReturnWith(10);
   });
 
   test('-position < -length', () => {
@@ -113,6 +136,6 @@ describe('insert', () => {
     ided.insert('Clara', -10);
 
     expect(ided.toArray(values)).toEqual(['Clara', 'Beni']);
-    expect(ided.insert('Valentino', -10)).not.toBeUndefined();
+    testReturnWith(-10);
   });
 });
