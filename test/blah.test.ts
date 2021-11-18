@@ -138,6 +138,16 @@ describe('insert', () => {
     expect(ided.toArray(values)).toEqual(['Clara', 'Beni']);
     testReturnWith(-10);
   });
+
+  test('using element as position', () => {
+    const ided = new Ided();
+
+    const beni = ided.insert('Beni');
+    const clara = ided.insert('Clara', { id: beni.id });
+    ided.insert('Valentino', clara);
+
+    expect(ided.toArray(values)).toEqual(['Valentino', 'Clara', 'Beni']);
+  });
 });
 
 describe('indexOf', () => {

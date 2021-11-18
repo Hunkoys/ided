@@ -1,4 +1,4 @@
-import { Id, Index, Key, Value } from './types';
+import { Index, Key, Value } from './types';
 import { Element } from './Element';
 
 export class Ided {
@@ -24,13 +24,16 @@ export class Ided {
     return -1;
   }
 
-  insert(value: Value, position?: Index): Element {
+  insert(value: Value, position?: Index | Key): Element {
     const element = new Element(value);
 
-    const index = position;
-
-    if (index == undefined) this.__array__.push(element);
-    else this.__array__.splice(index, 0, element);
+    if (position == undefined) this.__array__.push(element);
+    else {
+      const index =
+        typeof position !== Index ? this.indexOf(position as Key) : position;
+      this.__array__.splice(index as Index, 0, element);
+      // as
+    }
 
     return element;
   }
