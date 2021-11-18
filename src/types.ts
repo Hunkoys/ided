@@ -9,3 +9,5 @@ export const Id: string = typeof id;
 export type Value = any;
 const value: Value = undefined;
 export const Value: string = typeof value;
+
+export type Key = { id: Id } | { value: Value } | Element;

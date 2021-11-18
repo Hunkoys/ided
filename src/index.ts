@@ -1,4 +1,4 @@
-import { Id, Index, Value } from './types';
+import { Id, Index, Key, Value } from './types';
 import { Element } from './Element';
 
 export class Ided {
@@ -16,7 +16,7 @@ export class Ided {
     }
   }
 
-  indexOf(key: { id: Id } | { value: Value } | Element): Index {
+  indexOf(key: Key): Index {
     if ('id' in key) return this.__array__.findIndex(({ id }) => id === key.id);
     else if ('value' in key)
       return this.__array__.findIndex(({ value }) => value === key.value);
