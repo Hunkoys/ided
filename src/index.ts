@@ -31,10 +31,16 @@ export class Ided {
   insert(value: Value, position?: Index | Key): Element {
     const element = new Element(value);
 
+    const positionIsAKey = typeof position !== Index && position != undefined;
+    if (positionIsAKey) {
+      const indexOfKey = this.indexOf(position as Key);
+      position = indexOfKey > -1 ? indexOfKey : undefined;
+    }
+
     if (position == undefined) this.__array__.push(element);
     else {
-      const index =
-        typeof position !== Index ? this.indexOf(position as Key) : position;
+      const index = position;
+
       this.__array__.splice(index as Index, 0, element);
       // as
     }

@@ -1,5 +1,5 @@
 import { Ided } from '../src';
-import { Id } from '../src/types';
+import { Id, Index, Key } from '../src/types';
 import { Element } from '../src/Element';
 
 // ['Beni', 'Clara', 'Valentino']
@@ -69,84 +69,6 @@ describe('toArray', () => {
     const ided = new Ided(input);
 
     expect(ided.toArray(values)).toEqual(input);
-  });
-});
-
-describe('insert', () => {
-  function testReturnWith(index?: number) {
-    const ided = new Ided();
-
-    const input = 'Valentino';
-
-    const expectation = {
-      id: any(Id),
-      value: input,
-    };
-
-    expect(ided.insert(input, index)).toEqual(expectation);
-  }
-
-  test('no position argument', () => {
-    const ided = new Ided();
-
-    ided.insert('Beni');
-    ided.insert('Clara');
-    ided.insert('Valentino');
-
-    expect(ided.toArray(values)).toEqual(['Beni', 'Clara', 'Valentino']);
-    testReturnWith();
-  });
-
-  test('position 0', () => {
-    const ided = new Ided();
-
-    ided.insert('Beni', 0);
-    ided.insert('Clara', 0);
-    ided.insert('Valentino', 0);
-
-    expect(ided.toArray(values)).toEqual(['Valentino', 'Clara', 'Beni']);
-    testReturnWith(0);
-  });
-
-  test('negative positions', () => {
-    const ided = new Ided();
-
-    ided.insert('Beni'); // push
-    ided.insert('Clara', -1);
-    ided.insert('Valentino', -1);
-
-    expect(ided.toArray(values)).toEqual(['Clara', 'Valentino', 'Beni']);
-    testReturnWith(-1);
-  });
-
-  test('position > length', () => {
-    const ided = new Ided();
-
-    ided.insert('Beni', 10);
-    ided.insert('Clara', 10);
-
-    expect(ided.toArray(values)).toEqual(['Beni', 'Clara']);
-    testReturnWith(10);
-  });
-
-  test('-position < -length', () => {
-    const ided = new Ided();
-
-    ided.insert('Beni', -10);
-    ided.insert('Clara', -10);
-
-    expect(ided.toArray(values)).toEqual(['Clara', 'Beni']);
-    testReturnWith(-10);
-  });
-
-  test('using element as position', () => {
-    const ided = new Ided();
-
-    const beni = ided.insert('Beni');
-    const clara = ided.insert('Clara', { id: beni.id });
-    ided.insert('Valentino', clara);
-
-    expect(ided.toArray(values)).toEqual(['Valentino', 'Clara', 'Beni']);
   });
 });
 
@@ -248,5 +170,102 @@ describe('at', () => {
 
     expect(ided.at(-1)).toBe(null);
     expect(ided.at(20)).toBe(null);
+  });
+});
+
+describe('insert', () => {
+  function expectToReturnTheElementWith(pos?: Index | Key) {
+    const ided = new Ided();
+
+    const input = 'Valentino';
+
+    const expectation = {
+      id: any(Id),
+      value: input,
+    };
+
+    expect(ided.insert(input, pos)).toEqual(expectation);
+  }
+
+  test('no position argument', () => {
+    const ided = new Ided();
+
+    ided.insert('Beni');
+    ided.insert('Clara');
+    ided.insert('Valentino');
+
+    expect(ided.toArray(values)).toEqual(['Beni', 'Clara', 'Valentino']);
+    expectToReturnTheElementWith();
+  });
+
+  test('position 0', () => {
+    const ided = new Ided();
+
+    ided.insert('Beni', 0);
+    ided.insert('Clara', 0);
+    ided.insert('Valentino', 0);
+
+    expect(ided.toArray(values)).toEqual(['Valentino', 'Clara', 'Beni']);
+    expectToReturnTheElementWith(0);
+  });
+
+  test('negative positions', () => {
+    const ided = new Ided();
+
+    ided.insert('Beni'); // push
+    ided.insert('Clara', -1);
+    ided.insert('Valentino', -1);
+
+    expect(ided.toArray(values)).toEqual(['Clara', 'Valentino', 'Beni']);
+    expectToReturnTheElementWith(-1);
+  });
+
+  test('position > length', () => {
+    const ided = new Ided();
+
+    ided.insert('Beni', 10);
+    ided.insert('Clara', 10);
+
+    expect(ided.toArray(values)).toEqual(['Beni', 'Clara']);
+    expectToReturnTheElementWith(10);
+  });
+
+  test('-position < -length', () => {
+    const ided = new Ided();
+
+    ided.insert('Beni', -10);
+    ided.insert('Clara', -10);
+
+    expect(ided.toArray(values)).toEqual(['Clara', 'Beni']);
+    expectToReturnTheElementWith(-10);
+  });
+
+  test('using element as position', () => {
+    const ided = new Ided();
+
+    const beni = ided.insert('Beni');
+    const clara = ided.insert('Clara', { id: beni.id });
+    ided.insert('Valentino', clara);
+
+    expect(ided.toArray(values)).toEqual(['Valentino', 'Clara', 'Beni']);
+    expect(ided.insert('Clarita', clara)).toEqual({
+      id: any(Id),
+      value: 'Clarita',
+    });
+  });
+
+  test('non-existing elements as position', () => {
+    const input = ['Beni', 'Clara'];
+
+    const ided = new Ided(input);
+    ided.insert('Valentino', { value: 'Dogo' });
+    ided.insert('Clarita', { id: 'Some Unique ID' });
+
+    expect(ided.toArray(values)).toEqual([
+      'Beni',
+      'Clara',
+      'Valentino',
+      'Clarita',
+    ]);
   });
 });
