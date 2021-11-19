@@ -54,13 +54,20 @@ export class Ided {
     return element;
   }
 
-  // delete(position?: Index | Key): Element | Key {
-  //   const positionIsAKey = typeof position !== Index && position != undefined;
-  //   if (positionIsAKey) {
-  //     const indexOfKey = this.indexOf(position as Key);
-  //     position = indexOfKey > -1 ? indexOfKey : undefined;
-  //   }
-  // }
+  delete(position?: Position): Element | null {
+    if (position == undefined) position = -1;
+    else if (isAKey(position)) {
+      position = undefineNegative(this.indexOf(position as Key));
+      if (position == undefined) return null;
+    }
+
+    // position is a number at this point
+
+    const abs = Math.abs(position);
+    if (abs > this.length) position = abs;
+
+    return this.__array__.splice(position, 1)[0] || null;
+  }
 
   toArray(
     callback: (element: Element, index: Index) => Value = element => element

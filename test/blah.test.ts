@@ -269,3 +269,94 @@ describe('insert', () => {
     ]);
   });
 });
+
+describe('delete', () => {
+  test('no position argument', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
+
+    const deleted = ided.delete();
+
+    if (!(deleted instanceof Element)) fail('Deleted element is null');
+
+    expect(deleted.value).toBe('Valentino');
+    expect(ided.toArray(values)).toEqual(['Beni', 'Clara']);
+  });
+
+  test('position 0', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
+
+    const deleted = ided.delete(0);
+
+    if (!(deleted instanceof Element)) fail('Deleted element is null');
+
+    expect(deleted.value).toBe('Beni');
+    expect(ided.toArray(values)).toEqual(['Clara', 'Valentino']);
+  });
+
+  test('negative position', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
+
+    const deleted = ided.delete(-1);
+
+    if (!(deleted instanceof Element)) fail('Deleted element is null');
+
+    expect(deleted.value).toBe('Valentino');
+    expect(ided.toArray(values)).toEqual(['Beni', 'Clara']);
+  });
+
+  test('position out of bounds', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
+
+    const under = ided.delete(-10);
+    const over = ided.delete(10);
+
+    expect(under).toBe(null);
+    expect(over).toBe(null);
+    expect(ided.toArray(values)).toEqual(input);
+  });
+
+  test('using element as position', () => {
+    const ided = new Ided();
+
+    const beni = ided.insert('Beni');
+    const clara = ided.insert('Clara');
+    ided.insert('Valentino');
+
+    const deletedClara = ided.delete({ id: clara.id });
+    expect(ided.toArray(values)).toEqual(['Beni', 'Valentino']);
+
+    const deletedBeni = ided.delete(beni);
+    expect(ided.toArray(values)).toEqual(['Valentino']);
+
+    const deletedVal = ided.delete({ value: 'Valentino' });
+    expect(ided.toArray(values)).toEqual([]);
+
+    [
+      ['Beni', deletedBeni],
+      ['Clara', deletedClara],
+      ['Valentino', deletedVal],
+    ].forEach(([value, deleted]) => {
+      if (!(deleted instanceof Element)) fail('Deleted element is null');
+
+      expect(deleted.value).toBe(value);
+    });
+  });
+
+  test('non-existing elements as position', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
+
+    expect(ided.delete({ id: 'Some Arbitrary ID' })).toBe(null);
+    expect(ided.delete({ value: 'Some Arbitrary Value' })).toBe(null);
+    expect(ided.toArray(values)).toEqual(input);
+  });
+});
