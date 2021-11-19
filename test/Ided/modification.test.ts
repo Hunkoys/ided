@@ -226,39 +226,3 @@ describe('length', () => {
 
   'move';
 });
-
-describe('length', () => {
-  test('constructor', () => {
-    const input = ['Beni', 'Clara', 'Valentino'];
-
-    const ided3 = new Ided(input);
-    expect(ided3.length).toBe(3);
-
-    const ided0 = new Ided();
-    expect(ided0.length).toBe(0);
-  });
-
-  test('insert', () => {
-    const ided3 = new Ided(['Beni', 'Clara', 'Valentino']);
-    ided3.insert('Clarita');
-
-    expect(ided3.length).toBe(4);
-
-    const ided0 = new Ided();
-    ided0.insert(undefined);
-
-    expect(ided0.length).toBe(1);
-  });
-
-  test('delete', () => {
-    const ided = new Ided(['Beni', 'Clara', 'Valentino']);
-
-    ided.delete(1);
-    expect(ided.length).toBe(2);
-
-    ided.delete({ value: 'Beni' });
-    expect(ided.length).toBe(1);
-  });
-
-  'move';
-});
