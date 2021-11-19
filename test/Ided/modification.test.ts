@@ -1,20 +1,15 @@
 import { Ided } from '../../src';
-import { Id, Index, Key } from '../../src/types';
+import { Position } from '../../src/types';
 import { Element } from '../../src/Element';
-import { any, values } from '../tools';
+import { values, valueOf } from '../tools';
 
 describe('insert', () => {
-  function expectToReturnTheElementWith(pos?: Index | Key) {
-    const ided = new Ided();
+  function toReturnElementWith(pos?: Position, ided = new Ided()) {
+    const inserted = ided.insert('Valentino', pos);
 
-    const input = 'Valentino';
-
-    const expectation = {
-      id: any(Id),
-      value: input,
-    };
-
-    expect(ided.insert(input, pos)).toEqual(expectation);
+    if (inserted instanceof Element && inserted.value === 'Valentino')
+      return true;
+    return false;
   }
 
   test('no position argument', () => {
@@ -25,7 +20,7 @@ describe('insert', () => {
     ided.insert('Valentino');
 
     expect(ided.toArray(values)).toEqual(['Beni', 'Clara', 'Valentino']);
-    expectToReturnTheElementWith();
+    expect(toReturnElementWith()).toBe(true);
   });
 
   test('position 0', () => {
@@ -36,18 +31,18 @@ describe('insert', () => {
     ided.insert('Valentino', 0);
 
     expect(ided.toArray(values)).toEqual(['Valentino', 'Clara', 'Beni']);
-    expectToReturnTheElementWith(0);
+    expect(toReturnElementWith(0)).toBe(true);
   });
 
   test('negative positions', () => {
-    const ided = new Ided();
+    const ided = new Ided(['Beni']);
 
-    ided.insert('Beni'); // push
     ided.insert('Clara', -1);
     ided.insert('Valentino', -1);
 
     expect(ided.toArray(values)).toEqual(['Clara', 'Valentino', 'Beni']);
-    expectToReturnTheElementWith(-1);
+    expect(toReturnElementWith(-1)).toBe(false);
+    expect(toReturnElementWith(-1, new Ided(['Clara']))).toBe(true);
   });
 
   test('position > length', () => {
@@ -56,8 +51,8 @@ describe('insert', () => {
     ided.insert('Beni', 10);
     ided.insert('Clara', 10);
 
-    expect(ided.toArray(values)).toEqual(['Beni', 'Clara']);
-    expectToReturnTheElementWith(10);
+    expect(ided.toArray(values)).toEqual([]);
+    expect(toReturnElementWith(10)).toBe(false);
   });
 
   test('-position < -length', () => {
@@ -66,37 +61,37 @@ describe('insert', () => {
     ided.insert('Beni', -10);
     ided.insert('Clara', -10);
 
-    expect(ided.toArray(values)).toEqual(['Clara', 'Beni']);
-    expectToReturnTheElementWith(-10);
+    expect(ided.toArray(values)).toEqual([]);
+    expect(toReturnElementWith(-10)).toBe(false);
   });
 
   test('using element as position', () => {
     const ided = new Ided();
 
     const beni = ided.insert('Beni');
-    const clara = ided.insert('Clara', { id: beni.id });
-    ided.insert('Valentino', clara);
+    const clara = beni && ided.insert('Clara', { id: beni.id });
+
+    if (clara != null) ided.insert('Valentino', clara);
 
     expect(ided.toArray(values)).toEqual(['Valentino', 'Clara', 'Beni']);
-    expect(ided.insert('Clarita', clara)).toEqual({
-      id: any(Id),
-      value: 'Clarita',
-    });
+
+    const key = {
+      value: 'Clara',
+    };
+    expect(toReturnElementWith(key, new Ided(['Clara']))).toBe(true);
   });
 
   test('non-existing elements as position', () => {
     const input = ['Beni', 'Clara'];
 
     const ided = new Ided(input);
-    ided.insert('Valentino', { value: 'Dogo' });
-    ided.insert('Clarita', { id: 'Some Unique ID' });
+    ided.insert('Valentino', {
+      value: 'Some Arbitrary Value',
+    });
+    ided.insert('Clarita', { id: 'Some Arbitrary ID' });
 
-    expect(ided.toArray(values)).toEqual([
-      'Beni',
-      'Clara',
-      'Valentino',
-      'Clarita',
-    ]);
+    expect(ided.toArray(values)).toEqual(input);
+    expect(toReturnElementWith({ value: '' })).toBe(false);
   });
 });
 
@@ -108,9 +103,7 @@ describe('delete', () => {
 
     const deleted = ided.delete();
 
-    if (!(deleted instanceof Element)) fail('Deleted element is null');
-
-    expect(deleted.value).toBe('Valentino');
+    expect(valueOf(deleted)).toBe('Valentino');
     expect(ided.toArray(values)).toEqual(['Beni', 'Clara']);
   });
 
@@ -121,9 +114,7 @@ describe('delete', () => {
 
     const deleted = ided.delete(0);
 
-    if (!(deleted instanceof Element)) fail('Deleted element is null');
-
-    expect(deleted.value).toBe('Beni');
+    expect(valueOf(deleted)).toBe('Beni');
     expect(ided.toArray(values)).toEqual(['Clara', 'Valentino']);
   });
 
@@ -134,9 +125,7 @@ describe('delete', () => {
 
     const deleted = ided.delete(-1);
 
-    if (!(deleted instanceof Element)) fail('Deleted element is null');
-
-    expect(deleted.value).toBe('Valentino');
+    expect(valueOf(deleted)).toBe('Valentino');
     expect(ided.toArray(values)).toEqual(['Beni', 'Clara']);
   });
 
@@ -160,24 +149,28 @@ describe('delete', () => {
     const clara = ided.insert('Clara');
     ided.insert('Valentino');
 
-    const deletedClara = ided.delete({ id: clara.id });
-    expect(ided.toArray(values)).toEqual(['Beni', 'Valentino']);
+    if (beni === null || clara == null) {
+      fail('insert(s) have failed');
+    }
 
     const deletedBeni = ided.delete(beni);
+    expect(ided.toArray(values)).toEqual(['Clara', 'Valentino']);
+
+    const deletedClara = ided.delete({ id: clara.id });
     expect(ided.toArray(values)).toEqual(['Valentino']);
 
     const deletedVal = ided.delete({ value: 'Valentino' });
     expect(ided.toArray(values)).toEqual([]);
 
-    [
-      ['Beni', deletedBeni],
-      ['Clara', deletedClara],
-      ['Valentino', deletedVal],
-    ].forEach(([value, deleted]) => {
-      if (!(deleted instanceof Element)) fail('Deleted element is null');
+    const sequence: [Element | null, string][] = [
+      [deletedBeni, 'Beni'],
+      [deletedClara, 'Clara'],
+      [deletedVal, 'Valentino'],
+    ];
 
-      expect(deleted.value).toBe(value);
-    });
+    sequence.forEach(([deleted, value]) =>
+      expect(valueOf(deleted)).toBe(value)
+    );
   });
 
   test('non-existing elements as position', () => {
@@ -205,8 +198,9 @@ describe('length', () => {
   test('insert', () => {
     const ided3 = new Ided(['Beni', 'Clara', 'Valentino']);
     ided3.insert('Clarita');
+    ided3.insert('Clarita');
 
-    expect(ided3.length).toBe(4);
+    expect(ided3.length).toBe(5);
 
     const ided0 = new Ided();
     ided0.insert(undefined);
@@ -218,10 +212,10 @@ describe('length', () => {
     const ided = new Ided(['Beni', 'Clara', 'Valentino']);
 
     ided.delete(1);
-    expect(ided.length).toBe(2);
-
-    ided.delete({ value: 'Beni' });
+    ided.delete();
     expect(ided.length).toBe(1);
+    ided.delete({ value: 'Beni' });
+    expect(ided.length).toBe(0);
   });
 
   'move';

@@ -11,3 +11,5 @@ const value: Value = undefined;
 export const Value: string = typeof value;
 
 export type Key = { id: Id } | { value: Value } | Element;
+
+export type Position = Index | Key;

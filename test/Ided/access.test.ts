@@ -51,9 +51,9 @@ describe('indexOf', () => {
     const clara = ided.insert('Clara');
     const valentino = ided.insert('Valentino');
 
-    expect(ided.indexOf(beni)).toBe(0);
-    expect(ided.indexOf(clara)).toBe(1);
-    expect(ided.indexOf(valentino)).toBe(2);
+    [beni, clara, valentino].forEach((inserted, i) => {
+      if (inserted != null) expect(ided.indexOf(inserted)).toBe(i);
+    });
   });
 
   test('same values', () => {

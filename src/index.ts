@@ -1,14 +1,12 @@
-import { Index, Key, Value } from './types';
+import { Index, Key, Position, Value } from './types';
 import { Element } from './Element';
-
-type Position = Index | Key;
 
 function isAKey(position?: Position): position is Key {
   return typeof position !== Index && position != undefined;
 }
 
-function undefineNegative(value: number) {
-  return value > -1 ? value : undefined;
+function realIndex(value: number) {
+  return value > -1 ? value : null;
 }
 
 export class Ided {
@@ -38,30 +36,37 @@ export class Ided {
     return this.__array__[index] || null;
   }
 
-  insert(value: Value, position?: Position): Element {
+  insert(value: Value, position?: Position): Element | null {
     const element = new Element(value);
 
-    if (isAKey(position))
-      position = undefineNegative(this.indexOf(position as Key));
+    if (position == undefined) {
+      this.__array__.push(element);
+    } else {
+      if (isAKey(position)) {
+        const keyPos = realIndex(this.indexOf(position));
+        if (keyPos == null) return null;
+        else position = keyPos;
+      }
 
-    if (position == undefined) this.__array__.push(element);
-    else {
       const index = position;
 
-      this.__array__.splice(index as Index, 0, element);
+      const indexWithinBounds = Math.abs(index) <= this.length;
+      if (indexWithinBounds) this.__array__.splice(index, 0, element);
+      else return null;
     }
 
     return element;
   }
 
   delete(position?: Position): Element | null {
-    if (position == undefined) position = -1;
-    else if (isAKey(position)) {
-      position = undefineNegative(this.indexOf(position as Key));
-      if (position == undefined) return null;
-    }
+    if (position == undefined) {
+      position = -1;
+    } else if (isAKey(position)) {
+      const keyPos = realIndex(this.indexOf(position as Key));
 
-    // position is a number at this point
+      if (keyPos == null) return null;
+      else position = keyPos;
+    }
 
     const abs = Math.abs(position);
     if (abs > this.length) position = abs;

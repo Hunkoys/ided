@@ -14,3 +14,12 @@ export function any(type: string) {
 export function values(element: Element) {
   return element.value;
 }
+
+export function valueOf(element: Element | null): any {
+  if (!(element instanceof Element)) {
+    console.log(element);
+    return null;
+  }
+
+  return element.value;
+}
