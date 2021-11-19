@@ -62,7 +62,7 @@ export class Ided {
     if (position == undefined) {
       position = -1;
     } else if (isAKey(position)) {
-      const keyPos = realIndex(this.indexOf(position as Key));
+      const keyPos = realIndex(this.indexOf(position));
 
       if (keyPos == null) return null;
       else position = keyPos;
