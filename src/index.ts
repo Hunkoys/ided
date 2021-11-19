@@ -1,6 +1,14 @@
 import { Index, Key, Value } from './types';
 import { Element } from './Element';
 
+function isAKey(position: Index | Key | undefined): position is Key {
+  return typeof position !== Index && position != undefined;
+}
+
+function undefineNegative(value: number) {
+  return value > -1 ? value : undefined;
+}
+
 export class Ided {
   private __array__: Element[] = [];
 
@@ -31,22 +39,26 @@ export class Ided {
   insert(value: Value, position?: Index | Key): Element {
     const element = new Element(value);
 
-    const positionIsAKey = typeof position !== Index && position != undefined;
-    if (positionIsAKey) {
-      const indexOfKey = this.indexOf(position as Key);
-      position = indexOfKey > -1 ? indexOfKey : undefined;
-    }
+    if (isAKey(position))
+      position = undefineNegative(this.indexOf(position as Key));
 
     if (position == undefined) this.__array__.push(element);
     else {
       const index = position;
 
       this.__array__.splice(index as Index, 0, element);
-      // as
     }
 
     return element;
   }
+
+  // delete(position?: Index | Key): Element | Key {
+  //   const positionIsAKey = typeof position !== Index && position != undefined;
+  //   if (positionIsAKey) {
+  //     const indexOfKey = this.indexOf(position as Key);
+  //     position = indexOfKey > -1 ? indexOfKey : undefined;
+  //   }
+  // }
 
   toArray(
     callback: (element: Element, index: Index) => Value = element => element
