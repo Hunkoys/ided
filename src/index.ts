@@ -1,7 +1,9 @@
 import { Index, Key, Value } from './types';
 import { Element } from './Element';
 
-function isAKey(position: Index | Key | undefined): position is Key {
+type Position = Index | Key;
+
+function isAKey(position?: Position): position is Key {
   return typeof position !== Index && position != undefined;
 }
 
@@ -36,7 +38,7 @@ export class Ided {
     return this.__array__[index] || null;
   }
 
-  insert(value: Value, position?: Index | Key): Element {
+  insert(value: Value, position?: Position): Element {
     const element = new Element(value);
 
     if (isAKey(position))
