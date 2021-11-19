@@ -1,177 +1,7 @@
-import { Ided } from '../src';
-import { Id, Index, Key } from '../src/types';
-import { Element } from '../src/Element';
-
-// ['Beni', 'Clara', 'Valentino']
-
-const constructors = {
-  string: String,
-  number: Number,
-  boolean: Boolean,
-  object: Object,
-};
-
-function any(type: string) {
-  return expect.any(constructors[type as keyof object]);
-}
-
-function values(element: Element) {
-  return element.value;
-}
-
-describe('constructor', () => {
-  test('no parameter', () => {
-    new Ided();
-  });
-
-  test('string array', () => {
-    const input = ['Beni', 'Clara', 'Valentino'];
-
-    const ided = new Ided(input);
-
-    expect(ided.toArray(values)).toEqual(input);
-  });
-});
-
-describe('toArray', () => {
-  test('empty list', () => {
-    const ided = new Ided();
-
-    expect(ided.toArray()).toEqual([]);
-  });
-
-  test('no callback', () => {
-    const input = ['Beni', 'Clara', 'Valentino'];
-
-    const expectation = [
-      {
-        id: any(Id),
-        value: 'Beni',
-      },
-      {
-        id: any(Id),
-        value: 'Clara',
-      },
-      {
-        id: any(Id),
-        value: 'Valentino',
-      },
-    ];
-
-    const ided = new Ided(input);
-
-    expect(ided.toArray()).toEqual(expectation);
-  });
-
-  test('with callback', () => {
-    const input = ['Beni', 'Clara', 'Valentino'];
-
-    const ided = new Ided(input);
-
-    expect(ided.toArray(values)).toEqual(input);
-  });
-});
-
-describe('indexOf', () => {
-  test('using id', () => {
-    const ided = new Ided();
-
-    const input = ['Beni', 'Clara', 'Valentino'];
-
-    const elements = input.map(value => ided.insert(value));
-
-    elements.forEach((element, i) => {
-      if (element == null) {
-        fail('One of the returned elements is null');
-        return;
-      }
-
-      expect(ided.indexOf({ id: element.id })).toBe(i);
-    });
-  });
-
-  test('using value', () => {
-    const input = ['Beni', 'Clara', 'Valentino'];
-
-    const ided = new Ided(input);
-
-    input.forEach((value, i) => {
-      expect(ided.indexOf({ value })).toBe(i);
-    });
-  });
-
-  test('with id and value', () => {
-    const ided = new Ided();
-
-    const input = ['Beni', 'Clara', 'Valentino'];
-
-    const elements = input.map(value => ided.insert(value));
-
-    elements.forEach((element, i) => {
-      if (element == null) {
-        fail('One of the returned elements is null');
-        return;
-      }
-      expect(ided.indexOf({ id: element.id, value: element.value })).toBe(i);
-    });
-  });
-
-  test('using element', () => {
-    const ided = new Ided();
-
-    const beni = ided.insert('Beni');
-    const clara = ided.insert('Clara');
-    const valentino = ided.insert('Valentino');
-
-    expect(ided.indexOf(beni)).toBe(0);
-    expect(ided.indexOf(clara)).toBe(1);
-    expect(ided.indexOf(valentino)).toBe(2);
-  });
-
-  test('same values', () => {
-    const input = ['Beni', 'Clara', 'Clara'];
-
-    const ided = new Ided(input);
-
-    expect(ided.indexOf({ value: 'Clara' })).toBe(1);
-  });
-
-  test('id not in list', () => {
-    const input = ['Beni', 'Clara', 'Valentino'];
-
-    const ided = new Ided(input);
-
-    const id = 'This is Some Unique ID you wont even guess it!';
-    expect(ided.indexOf({ id })).toBe(-1);
-  });
-
-  test('value not in list', () => {
-    const input = ['Beni', 'Clara', 'Valentino'];
-
-    const ided = new Ided(input);
-
-    expect(ided.indexOf({ value: 'Clarita' })).toBe(-1);
-  });
-});
-
-describe('at', () => {
-  test('in bounds', () => {
-    const input = ['Beni', 'Clara', 'Valentino'];
-
-    const ided = new Ided(input);
-
-    expect(ided.at(1)?.value).toBe('Clara');
-  });
-
-  test('out of bounds', () => {
-    const input = ['Beni', 'Clara', 'Valentino'];
-
-    const ided = new Ided(input);
-
-    expect(ided.at(-1)).toBe(null);
-    expect(ided.at(20)).toBe(null);
-  });
-});
+import { Ided } from '../../src';
+import { Id, Index, Key } from '../../src/types';
+import { Element } from '../../src/Element';
+import { any, values } from '../tools';
 
 describe('insert', () => {
   function expectToReturnTheElementWith(pos?: Index | Key) {
@@ -359,6 +189,42 @@ describe('delete', () => {
     expect(ided.delete({ value: 'Some Arbitrary Value' })).toBe(null);
     expect(ided.toArray(values)).toEqual(input);
   });
+});
+
+describe('length', () => {
+  test('constructor', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided3 = new Ided(input);
+    expect(ided3.length).toBe(3);
+
+    const ided0 = new Ided();
+    expect(ided0.length).toBe(0);
+  });
+
+  test('insert', () => {
+    const ided3 = new Ided(['Beni', 'Clara', 'Valentino']);
+    ided3.insert('Clarita');
+
+    expect(ided3.length).toBe(4);
+
+    const ided0 = new Ided();
+    ided0.insert(undefined);
+
+    expect(ided0.length).toBe(1);
+  });
+
+  test('delete', () => {
+    const ided = new Ided(['Beni', 'Clara', 'Valentino']);
+
+    ided.delete(1);
+    expect(ided.length).toBe(2);
+
+    ided.delete({ value: 'Beni' });
+    expect(ided.length).toBe(1);
+  });
+
+  'move';
 });
 
 describe('length', () => {
