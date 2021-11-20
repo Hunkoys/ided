@@ -75,7 +75,7 @@ export class Ided {
   }
 
   move(from: Position, to: Position) {
-    if (to === undefined || from == undefined) {
+    if (to == null || from == null) {
       return;
     }
 
@@ -99,5 +99,11 @@ export class Ided {
     callback: (element: Element, index: Index) => Value = element => element
   ) {
     return this.__array__.map(callback);
+  }
+
+  find(key: Key): Element | null {
+    if (key == null) return null;
+    const keyPos = this.indexOf(key);
+    return this.at(keyPos);
   }
 }

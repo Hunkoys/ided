@@ -1,4 +1,5 @@
 import { Ided } from '../../src';
+import { none } from '../tools';
 
 describe('indexOf', () => {
   test('using id', () => {
@@ -98,5 +99,50 @@ describe('at', () => {
 
     expect(ided.at(-1)).toBe(null);
     expect(ided.at(20)).toBe(null);
+  });
+});
+
+describe('find', () => {
+  test('with id', () => {
+    const ided = new Ided();
+
+    const beni = ided.insert('Beni');
+    const clara = ided.insert('Clara');
+    const valentino = ided.insert('Valentino');
+
+    if (beni == null || clara == null || valentino == null)
+      fail('insert(s) failed');
+
+    expect(ided.find({ id: beni.id })).toEqual(beni);
+    expect(ided.find({ id: clara.id })).toEqual(clara);
+    expect(ided.find({ id: valentino.id })).toEqual(valentino);
+  });
+
+  test('with value', () => {
+    const ided = new Ided();
+
+    const beni = ided.insert('Beni');
+    const clara = ided.insert('Clara');
+    const valentino = ided.insert('Valentino');
+
+    if (beni == null || clara == null || valentino == null)
+      fail('insert(s) failed');
+
+    expect(ided.find({ value: beni.value })).toEqual(beni);
+    expect(ided.find({ value: clara.value })).toEqual(clara);
+    expect(ided.find({ value: valentino.value })).toEqual(valentino);
+  });
+
+  test('no argument', () => {
+    const ided = new Ided(['Beni', 'Clara', 'Valentino']);
+
+    expect(ided.find(none)).toBe(null);
+  });
+
+  test('non-existent', () => {
+    const ided = new Ided(['Beni', 'Clara', 'Valentino']);
+
+    expect(ided.find({ id: 'Some ID' })).toBe(null);
+    expect(ided.find({ value: 'Some Value' })).toBe(null);
   });
 });
