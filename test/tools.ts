@@ -23,3 +23,5 @@ export function valueOf(element: Element | null): any {
 
   return element.value;
 }
+
+export const none = (undefined as unknown) as any;
