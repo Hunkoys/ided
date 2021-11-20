@@ -24,10 +24,6 @@ export class Ided {
     }
   }
 
-  static stringify(ided: Ided) {
-    return JSON.stringify(ided && ided.__array__);
-  }
-
   indexOf(key: Key): Index {
     if ('id' in key) return this.__array__.findIndex(({ id }) => id === key.id);
     else if ('value' in key)
