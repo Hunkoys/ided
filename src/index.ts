@@ -74,6 +74,27 @@ export class Ided {
     return this.__array__.splice(position, 1)[0] || null;
   }
 
+  move(from: Position, to: Position) {
+    if (to === undefined || from == undefined) {
+      return;
+    }
+
+    if (isAKey(from)) {
+      const keyPos = this.indexOf(from);
+      if (keyPos < 0) return;
+      from = keyPos;
+    }
+
+    if (isAKey(to)) {
+      const keyPos = this.indexOf(to);
+      if (keyPos < 0) return;
+      to = keyPos;
+    }
+
+    const subject = this.delete(from);
+    if (subject) this.__array__.splice(to, 0, subject);
+  }
+
   toArray(
     callback: (element: Element, index: Index) => Value = element => element
   ) {

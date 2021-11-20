@@ -184,6 +184,105 @@ describe('delete', () => {
   });
 });
 
+describe('move', () => {
+  test('missing arguments', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+    const ided = new Ided(input);
+
+    const none = (undefined as unknown) as Position;
+
+    ided.move(none, none);
+    expect(ided.toArray(values)).toEqual(input);
+    ided.move(1, none);
+    expect(ided.toArray(values)).toEqual(input);
+    ided.move(none, 1);
+    expect(ided.toArray(values)).toEqual(input);
+  });
+
+  test('with index', () => {
+    const ided = new Ided(['Beni', 'Clara', 'Valentino']);
+
+    ided.move(1, 0);
+    expect(ided.toArray(values)).toEqual(['Clara', 'Beni', 'Valentino']);
+    ided.move(1, 2);
+    expect(ided.toArray(values)).toEqual(['Clara', 'Valentino', 'Beni']);
+  });
+
+  test('with id', () => {
+    const ided = new Ided();
+
+    const beni = ided.insert('Beni');
+    const clara = ided.insert('Clara');
+    const valentino = ided.insert('Valentino');
+
+    if (beni == null || clara == null || valentino == null)
+      fail('insert failed');
+
+    ided.move({ id: clara.id }, { id: beni.id });
+    expect(ided.toArray(values)).toEqual(['Clara', 'Beni', 'Valentino']);
+    ided.move({ id: beni.id }, { id: valentino.id });
+    expect(ided.toArray(values)).toEqual(['Clara', 'Valentino', 'Beni']);
+  });
+
+  test('with value', () => {
+    const ided = new Ided(['Beni', 'Clara', 'Valentino']);
+
+    ided.move({ value: 'Clara' }, { value: 'Beni' });
+    expect(ided.toArray(values)).toEqual(['Clara', 'Beni', 'Valentino']);
+    ided.move({ value: 'Beni' }, { value: 'Valentino' });
+    expect(ided.toArray(values)).toEqual(['Clara', 'Valentino', 'Beni']);
+  });
+
+  test('with element', () => {
+    const ided = new Ided();
+
+    const beni = ided.insert('Beni');
+    const clara = ided.insert('Clara');
+    const valentino = ided.insert('Valentino');
+
+    if (beni == null || clara == null || valentino == null)
+      fail('insert failed');
+
+    ided.move(clara, beni);
+    expect(ided.toArray(values)).toEqual(['Clara', 'Beni', 'Valentino']);
+    ided.move(beni, valentino);
+    expect(ided.toArray(values)).toEqual(['Clara', 'Valentino', 'Beni']);
+  });
+
+  test('same positions', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
+
+    ided.move(1, 1);
+    expect(ided.toArray(values)).toEqual(input);
+    ided.move(2, 2);
+    expect(ided.toArray(values)).toEqual(input);
+  });
+
+  test('out of bounds', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
+
+    ided.move(-1, 2);
+    expect(ided.toArray(values)).toEqual(input);
+    ided.move(2, 10);
+    expect(ided.toArray(values)).toEqual(input);
+  });
+
+  test('non-existing elements as positions', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
+
+    ided.move({ id: '' }, { value: 'Clara' });
+    expect(ided.toArray(values)).toEqual(input);
+    ided.move({ value: 'Clara' }, { id: '' });
+    expect(ided.toArray(values)).toEqual(input);
+  });
+});
+
 describe('length', () => {
   test('constructor', () => {
     const input = ['Beni', 'Clara', 'Valentino'];
@@ -216,5 +315,20 @@ describe('length', () => {
     expect(ided.length).toBe(1);
     ided.delete({ value: 'Beni' });
     expect(ided.length).toBe(0);
+  });
+
+  test('move', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+    const l = input.length;
+
+    const ided = new Ided(input);
+
+    ided.move(2, 1);
+    ided.move(0, 2);
+    expect(ided.length).toBe(l);
+    ided.move({ value: 'Beni' }, { value: 'Clara' });
+    expect(ided.length).toBe(l);
+    ided.move({ value: 'Clara' }, { value: 'Valentino' });
+    expect(ided.length).toBe(l);
   });
 });
