@@ -217,6 +217,4 @@ describe('length', () => {
     ided.delete({ value: 'Beni' });
     expect(ided.length).toBe(0);
   });
-
-  'move';
 });

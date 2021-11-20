@@ -2,7 +2,7 @@ import { Index, Key, Position, Value } from './types';
 import { Element } from './Element';
 
 function isAKey(position?: Position): position is Key {
-  return typeof position !== Index && position != undefined;
+  return typeof position !== Index && position != null;
 }
 
 function realIndex(value: number) {
@@ -39,7 +39,7 @@ export class Ided {
   insert(value: Value, position?: Position): Element | null {
     const element = new Element(value);
 
-    if (position == undefined) {
+    if (position == null) {
       this.__array__.push(element);
     } else {
       if (isAKey(position)) {
@@ -59,7 +59,7 @@ export class Ided {
   }
 
   delete(position?: Position): Element | null {
-    if (position == undefined) {
+    if (position == null) {
       position = -1;
     } else if (isAKey(position)) {
       const keyPos = realIndex(this.indexOf(position));
