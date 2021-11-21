@@ -127,7 +127,7 @@ export class Ided {
     return ided;
   }
 
-  filter(callback: (value: Value, index: Index) => boolean): Ided {
+  filter(callback: (value: Value, index: Index) => unknown): Ided {
     if (typeof callback !== 'function')
       throw new TypeError(`Passed callback is not a function: ${callback}`);
 

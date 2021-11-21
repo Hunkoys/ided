@@ -97,6 +97,47 @@ describe('map', () => {
 });
 
 describe('filter', () => {
+  test('should filter with truthy values', () => {
+    const ided = new Ided(['Beni', 'Clara', 'Valentino']);
+
+    const callbacks = {
+      falsy: [
+        () => false,
+        () => '',
+        () => 0,
+        () => -0,
+        () => NaN,
+        () => null,
+        () => undefined,
+        // () => 0n,
+      ],
+      truthy: [
+        () => true,
+        () => 42,
+        () => -42,
+        () => 'foo',
+        () => '0',
+        () => 'false',
+        () => {
+          return {};
+        },
+        () => [Infinity],
+        () => 1.1,
+        // () => 1n,
+      ],
+    };
+
+    for (const callback of callbacks.truthy) {
+      const clone = ided.filter(callback);
+      expect(clone.toArray()).not.toEqual([]);
+    }
+
+    for (const callback of callbacks.falsy) {
+      const clone = ided.filter(callback);
+      expect(clone.toArray()).toEqual([]);
+    }
+  });
+
   test('preserve ids and values', () => {
     const input = [
       'Valentino',
