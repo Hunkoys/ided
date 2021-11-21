@@ -98,11 +98,13 @@ describe('map', () => {
 
 describe('filter', () => {
   test('should filter with truthy values', () => {
-    const ided = new Ided(['Beni', 'Clara', 'Valentino']);
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
 
     for (const callback of callbacks.truthy) {
       const clone = ided.filter(callback);
-      expect(clone.toArray()).not.toEqual([]);
+      expect(clone.toArray(values)).toEqual(input);
     }
 
     for (const callback of callbacks.falsy) {

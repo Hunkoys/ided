@@ -16,6 +16,12 @@ export class Ided {
     return this.__array__.length;
   }
 
+  private __traverse__(
+    callback: (element: Element, index: Index) => unknown | void
+  ) {
+    this.__array__.find(callback);
+  }
+
   constructor(values?: Value[]) {
     if (values) {
       this.__array__ = values.map(value => {
@@ -40,6 +46,31 @@ export class Ided {
     if (key == null) return null;
     const keyPos = this.indexOf(key);
     return this.at(keyPos);
+  }
+
+  search(
+    callback: (element: Element, index: Index) => unknown
+  ): Element | null {
+    if (typeof callback !== 'function')
+      throw new TypeError(`Passed callback is not a function: ${callback}`);
+
+    let match = null;
+
+    this.__traverse__((element, index) => {
+      if (!(element instanceof Element)) return false;
+
+      const copy = new Element(element.value);
+      copy.id = element.id;
+      const result = callback(copy, index);
+      if (result) {
+        match = copy;
+        return true;
+      }
+
+      return false;
+    });
+
+    return match;
   }
 
   insert(value: Value, position?: Position): Element | null {
@@ -99,10 +130,6 @@ export class Ided {
 
     const subject = this.delete(from);
     if (subject) this.__array__.splice(to, 0, subject);
-  }
-
-  private __traverse__(callback: (element: Element, index: Index) => unknown) {
-    this.__array__.find(callback);
   }
 
   toArray(

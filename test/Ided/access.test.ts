@@ -1,5 +1,6 @@
 import { Ided } from '../../src';
-import { none } from '../tools';
+import { Element } from '../../src/Element';
+import { callbacks, none, values } from '../tools';
 
 describe('indexOf', () => {
   test('using id', () => {
@@ -144,5 +145,67 @@ describe('find', () => {
 
     expect(ided.find({ id: 'Some ID' })).toBe(null);
     expect(ided.find({ value: 'Some Value' })).toBe(null);
+  });
+});
+
+describe('search', () => {
+  test('should return element with truthy', () => {
+    const ided = new Ided(['Beni']);
+
+    const beni = ided.at(0);
+
+    if (beni == null) fail('at failed');
+
+    for (const callback of callbacks.truthy) {
+      expect(ided.search(callback)).toEqual(beni);
+    }
+
+    for (const callback of callbacks.falsy) {
+      expect(ided.search(callback)).toBe(null);
+    }
+  });
+
+  test('should NOT modify ided', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
+
+    const result = ided.search(({ value }) => value === 'Clara');
+
+    if (result == null) fail('search failed');
+
+    expect(ided.toArray(values)).toEqual(input);
+  });
+
+  test('should return instance of element', () => {
+    const ided = new Ided(['Beni']);
+
+    const result = ided.search(() => true);
+
+    if (result == null) fail('search failed');
+
+    expect(result).toBeInstanceOf(Element);
+  });
+
+  test('should return the first result', () => {
+    const ided = new Ided([
+      [0, 'Beni'],
+      [1, 'Clara'],
+      [2, 'Clara'],
+    ]);
+
+    const result = ided.search(element => element.value[1] === 'Clara');
+
+    if (result == null) fail('search failed');
+
+    expect(result.value[0]).toBe(1);
+  });
+
+  test('should throw when no argument', () => {
+    const ided = new Ided(['Beni']);
+
+    expect(() => {
+      ided.search(none);
+    }).toThrow();
   });
 });
