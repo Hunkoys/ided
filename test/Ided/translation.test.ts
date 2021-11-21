@@ -1,6 +1,6 @@
 import { Ided } from '../../src';
-import { Id } from '../../src/types';
-import { any, values } from '../tools';
+import { Id, Value } from '../../src/types';
+import { any, none, values } from '../tools';
 
 describe('toArray', () => {
   test('empty list', () => {
@@ -38,5 +38,35 @@ describe('toArray', () => {
     const ided = new Ided(input);
 
     expect(ided.toArray(values)).toEqual(input);
+  });
+});
+
+describe('map', () => {
+  test('preverve ids and values', () => {
+    const ided = new Ided(['Beni', 'Clara', 'Valentino']);
+
+    const original = ided.toArray();
+
+    const clone = ided.map(value => value).toArray();
+
+    expect(original).toEqual(clone);
+  });
+
+  test('empty', () => {
+    expect(new Ided().map(value => value).toArray(values)).toEqual([]);
+  });
+
+  test('provide index', () => {
+    const ided = new Ided(['Beni', 'Clara', 'Valentino']);
+
+    expect(ided.map((_, i) => i).toArray(values)).toEqual([0, 1, 2]);
+  });
+
+  test('no argument', () => {
+    const ided = new Ided(['Beni', 'Clara', 'Valentino']);
+
+    expect(() => {
+      ided.map(none as () => Value);
+    }).toThrow();
   });
 });

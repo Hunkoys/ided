@@ -101,9 +101,26 @@ export class Ided {
     if (subject) this.__array__.splice(to, 0, subject);
   }
 
+  private __traverse__(callback: (element: Element, index: Index) => unknown) {
+    this.__array__.find(callback);
+  }
+
   toArray(
     callback: (element: Element, index: Index) => Value = element => element
   ) {
     return this.__array__.map(callback);
+  }
+
+  map(callback: (value: Value, index: Index) => Value) {
+    if (typeof callback !== 'function')
+      throw new TypeError(`Passed callback is not a function: ${callback}`);
+    const ided = new Ided();
+
+    this.__traverse__((element, index) => {
+      element.value = callback(element, index);
+      ided.__array__.push(element);
+    });
+
+    return ided;
   }
 }
