@@ -11,7 +11,8 @@ export function any(type: string) {
   return expect.any(constructors[type as keyof object]);
 }
 
-export function values(element: Element) {
+export function values(element: Element | null) {
+  if (element == null) fail(`value element is invalid: ${element}`);
   return element.value;
 }
 
