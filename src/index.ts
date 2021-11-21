@@ -36,6 +36,12 @@ export class Ided {
     return this.__array__[index] || null;
   }
 
+  find(key: Key): Element | null {
+    if (key == null) return null;
+    const keyPos = this.indexOf(key);
+    return this.at(keyPos);
+  }
+
   insert(value: Value, position?: Position): Element | null {
     const element = new Element(value);
 
@@ -99,11 +105,5 @@ export class Ided {
     callback: (element: Element, index: Index) => Value = element => element
   ) {
     return this.__array__.map(callback);
-  }
-
-  find(key: Key): Element | null {
-    if (key == null) return null;
-    const keyPos = this.indexOf(key);
-    return this.at(keyPos);
   }
 }
