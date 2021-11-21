@@ -111,14 +111,30 @@ export class Ided {
     return this.__array__.map(callback);
   }
 
-  map(callback: (value: Value, index: Index) => Value) {
+  map(callback: (value: Value, index: Index) => Value): Ided {
     if (typeof callback !== 'function')
       throw new TypeError(`Passed callback is not a function: ${callback}`);
+
     const ided = new Ided();
 
     this.__traverse__((element, index) => {
-      element.value = callback(element, index);
-      ided.__array__.push(element);
+      const newElement = new Element(callback(element.value, index));
+      newElement.id = element.id;
+
+      ided.__array__.push(newElement);
+    });
+
+    return ided;
+  }
+
+  filter(callback: (value: Value, index: Index) => boolean): Ided {
+    if (typeof callback !== 'function')
+      throw new TypeError(`Passed callback is not a function: ${callback}`);
+
+    const ided = new Ided();
+
+    this.__traverse__((element, index) => {
+      if (callback(element.value, index)) ided.__array__.push(element);
     });
 
     return ided;

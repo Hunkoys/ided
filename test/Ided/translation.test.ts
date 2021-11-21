@@ -1,6 +1,7 @@
 import { Ided } from '../../src';
+import { Element } from '../../src/Element';
 import { Id, Value } from '../../src/types';
-import { any, none, values } from '../tools';
+import { any, ids, none, values } from '../tools';
 
 describe('toArray', () => {
   test('empty list', () => {
@@ -42,8 +43,10 @@ describe('toArray', () => {
 });
 
 describe('map', () => {
-  test('preverve ids and values', () => {
-    const ided = new Ided(['Beni', 'Clara', 'Valentino']);
+  test('should preverve ids and values', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
 
     const original = ided.toArray();
 
@@ -52,21 +55,140 @@ describe('map', () => {
     expect(original).toEqual(clone);
   });
 
-  test('empty', () => {
+  test('should produce instances of Element', () => {
+    const ided = new Ided(['Beni', 'Clara', 'Valentino']);
+
+    const clone = ided.map(() => 'Some value');
+
+    const sample = clone.at(1);
+
+    if (sample == null) fail('at faileed');
+
+    expect(sample).toBeInstanceOf(Element);
+  });
+
+  test('should preserve original list', () => {
+    const input = ['Beni', 'Clara', 'Valentino'];
+
+    const ided = new Ided(input);
+
+    ided.map(value => value).toArray();
+
+    expect(ided.toArray(values)).toEqual(input);
+  });
+
+  test('should return [] on empty', () => {
     expect(new Ided().map(value => value).toArray(values)).toEqual([]);
   });
 
-  test('provide index', () => {
+  test('should provide index', () => {
     const ided = new Ided(['Beni', 'Clara', 'Valentino']);
 
     expect(ided.map((_, i) => i).toArray(values)).toEqual([0, 1, 2]);
   });
 
-  test('no argument', () => {
+  test('should throw when no argument', () => {
     const ided = new Ided(['Beni', 'Clara', 'Valentino']);
 
     expect(() => {
       ided.map(none as () => Value);
+    }).toThrow();
+  });
+});
+
+describe('filter', () => {
+  test('preserve ids and values', () => {
+    const input = [
+      'Valentino',
+      'Beni',
+      'Clara',
+      'Valentino',
+      'Beni',
+      'Clara',
+      'Valentino',
+    ];
+
+    const ided = new Ided(input);
+
+    const valentinos = [0, 3, 6].map(i => ided.at(i));
+
+    for (const valentino of valentinos) {
+      if (valentino == null) fail('at(s) failed');
+      if (valentino.value !== 'Valentino') fail(`at()'d the wrong element`);
+    }
+
+    const valentinoIds = valentinos.map(ids);
+    const valentinoValues = valentinos.map(values);
+
+    expect(ided.filter(() => true).toArray(values)).toEqual(input);
+    expect(ided.filter(value => value === 'Valentino').toArray(ids)).toEqual(
+      valentinoIds
+    );
+    expect(ided.filter(value => value === 'Valentino').toArray(values)).toEqual(
+      valentinoValues
+    );
+  });
+
+  test('should preserve original list', () => {
+    const ided = new Ided(['Beni']);
+
+    const beni = { ...ided.at(0) };
+
+    if (beni == null) fail('at failed');
+
+    ided.filter(() => true);
+
+    expect(ided.toArray()).toEqual([beni]);
+  });
+
+  test('should produce instances of Element', () => {
+    const ided = new Ided(['Beni']);
+
+    const clone = ided.filter(() => true);
+
+    const sample = clone.at(0);
+
+    if (sample == null) fail('at failed');
+
+    expect(sample).toBeInstanceOf(Element);
+  });
+
+  test('should provide index', () => {
+    const input = [
+      'Valentino',
+      'Beni',
+      'Clara',
+      'Valentino',
+      'Beni',
+      'Clara',
+      'Valentino',
+    ];
+
+    const ided = new Ided(input);
+
+    ided.filter((_, i) => {
+      expect(i).toEqual(expect.any(Number));
+      return true;
+    });
+  });
+
+  test('should return [] on empty', () => {
+    expect(new Ided().toArray(values)).toEqual([]);
+  });
+
+  test('should throw when no argument', () => {
+    const ided = new Ided([
+      'Valentino',
+      'Beni',
+      'Clara',
+      'Valentino',
+      'Beni',
+      'Clara',
+      'Valentino',
+    ]);
+
+    expect(() => {
+      ided.filter(none as () => boolean);
     }).toThrow();
   });
 });
