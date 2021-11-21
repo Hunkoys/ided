@@ -1,7 +1,7 @@
 import { Ided } from '../../src';
 import { Element } from '../../src/Element';
 import { Id, Value } from '../../src/types';
-import { any, ids, none, values } from '../tools';
+import { any, callbacks, ids, none, values } from '../tools';
 
 describe('toArray', () => {
   test('empty list', () => {
@@ -99,33 +99,6 @@ describe('map', () => {
 describe('filter', () => {
   test('should filter with truthy values', () => {
     const ided = new Ided(['Beni', 'Clara', 'Valentino']);
-
-    const callbacks = {
-      falsy: [
-        () => false,
-        () => '',
-        () => 0,
-        () => -0,
-        () => NaN,
-        () => null,
-        () => undefined,
-        // () => 0n,
-      ],
-      truthy: [
-        () => true,
-        () => 42,
-        () => -42,
-        () => 'foo',
-        () => '0',
-        () => 'false',
-        () => {
-          return {};
-        },
-        () => [Infinity],
-        () => 1.1,
-        // () => 1n,
-      ],
-    };
 
     for (const callback of callbacks.truthy) {
       const clone = ided.filter(callback);

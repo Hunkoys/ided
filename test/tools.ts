@@ -36,3 +36,30 @@ export function valueOf(element: Element | null): any {
 }
 
 export const none = (undefined as unknown) as any;
+
+export const callbacks = {
+  falsy: [
+    () => false,
+    () => '',
+    () => 0,
+    () => -0,
+    () => NaN,
+    () => null,
+    () => undefined,
+    // () => 0n,
+  ],
+  truthy: [
+    () => true,
+    () => 42,
+    () => -42,
+    () => 'foo',
+    () => '0',
+    () => 'false',
+    () => {
+      return {};
+    },
+    () => [Infinity],
+    () => 1.1,
+    // () => 1n,
+  ],
+};
